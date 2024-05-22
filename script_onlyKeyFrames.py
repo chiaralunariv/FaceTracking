@@ -146,7 +146,7 @@ def CosSim(a,b):
     cos=dotp/(lenga*lengb) ####### Esto es lo mismo que 
     #cos=np.dot(a,b)/((np.linalg.norm(a))*(np.linalg.norm(b)))
     return cos
-############### main#############
+############### main #############
 
 
 recognizer= cv.CascadeClassifier(cascade)# <- este utiliza OPENCV
@@ -169,9 +169,12 @@ readvideo=True
 # finalmente saca el descriptor hog con cell=8X8 y blocks= 8X16. 
 # Descriptor hog por cuaef areas(array1,array2,integrers):
 ############
-cuadro=1
+
+cuadro=1 #counting all frames in the video
+_keyFrame=0 #counting only those frames where a face is detected
 keyframe=[]
 KeyFrameInfo=[]
+
 if forgevideo==True:
     vid_cod = cv.VideoWriter_fourcc(*'DIVX')
     output = cv.VideoWriter("video.mp4", vid_cod, 25, (900,700))
@@ -192,16 +195,16 @@ while readvideo==True:
         minSize=(50,50),# minimum dimensions of face in pixels
         flags=cv.CASCADE_SCALE_IMAGE)
     for (x,y,z,w) in faces:
+        _keyFrame = cuadro-1 #only when face is detected give _keyFrame the frame(cuadro) value
         roi_gray=gray[y:y+w,x:x+z]
         end_coord_x=x+z
         end_coord_y=y+w
         color=(255,0,0)
-        stroke=2
+        stroke=1
         cv.rectangle(gray,(x,y),(end_coord_x,end_coord_y),color,stroke)
         dlib_face=dlib.rectangle(int(x),int(y),int(x+z),int(y+w))
         detected_landmarks=aligner(gray,dlib_face).parts()# landmarks coordinates
         landmarks=np.array(list_p(detected_landmarks))
-        #temp_land_list = landmarks.tolist() to delete
         minimum=0
         maximum=68
         seleccion=selection(minimum,maximum,landmarks)
@@ -209,13 +212,12 @@ while readvideo==True:
         for landmark in mouthlandmarks_P:
             x=landmark[0]
             y=landmark[1]
-            cv.circle(gray, (x, y), 2, (250), -1)
+            cv.circle(gray, (x, y), 1, (250), -1)
         copy=gray*0
         for idx, point in enumerate(seleccion):
             pos=(point[0],point[1])
             copy[pos[0]][pos[1]]=300
             cv.circle(frame,pos,1,color)
-
         x_axis,y_axis=axis(seleccion)
         mouth=mouth_roi(x_axis,y_axis,frame)
         mouth2=mouth_roi(x_axis,y_axis,copy)
@@ -229,11 +231,7 @@ while readvideo==True:
             output.write(gray4saving)
         if playvideo==True:
             cv.imshow('Frame',gray)   
-        if cuadro==1:
-            plt.imshow(mouth2)
-            plt.tight_layout()
-            plt.show()
-            keyframe=1
+        if _keyFrame < 2:
             temporal=histogram
             temporal_coord=seleccion_lst
             all_land_list = landmarks
@@ -242,13 +240,13 @@ while readvideo==True:
             all_land_list = np.append(all_land_list, landmarks, axis=1)
             str_cuadro = np.repeat(cuadro,69)
             all_cuadro = np.append(all_cuadro,str_cuadro)
-            comparation=cv.compareHist(temporal,histogram,0)
+            #comparation=cv.compareHist(temporal,histogram,0)
+            comparation=.7 
             print(comparation)
-            #comparation=.5
             if comparation>=0.5 and comparation<=0.71 and keyframe==1:
-                plt.imshow(mouth2, cmap="autumn")
-                plt.tight_layout()
-                plt.show()
+                #plt.imshow(mouth2, cmap="autumn")
+                #plt.tight_layout()
+                #plt.show()
                 temporal=histogram
                 my_temp=[]
                 for i in range(len(seleccion_lst)):
@@ -262,9 +260,9 @@ while readvideo==True:
                 keyframe+=1
                 sumdescriptordummy=descriptordummy
             elif comparation>=0.5 and comparation<=0.71 and keyframe>1:
-                plt.imshow(mouth2,cmap="autumn")
-                plt.tight_layout()
-                plt.show()
+                #plt.imshow(mouth2,cmap="autumn")
+                #plt.tight_layout()
+                #plt.show()
                 temporal=histogram
                 my_temp=[]
                 for i in range(len(seleccion_lst)):
@@ -281,9 +279,13 @@ while readvideo==True:
                     sumdescriptordummy[i]=sumdescriptordummy[i]+descriptordummy[i]
                 temporal_coord=seleccion_lst
                 keyframe=keyframe+1
-        cuadro=cuadro+1 #counter
-        
-     
+    if _keyFrame != cuadro:
+        landmark_empty  = np.empty((68,2,))
+        landmark_empty[:] = np.nan
+        all_land_list = np.append(all_land_list,landmark_empty,axis=1)
+        str_cuadro = np.repeat(cuadro,69)
+        all_cuadro = np.append(all_cuadro,str_cuadro)
+    cuadro=cuadro+1 #counter 
     if cv.waitKey(24) & 0xFF == ord('q'):
         break
 cap.release()

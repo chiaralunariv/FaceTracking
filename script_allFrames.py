@@ -244,8 +244,8 @@ while readvideo==True:
             temporal_coord=seleccion_lst
         else:
             comparation=cv.compareHist(temporal,histogram,0)
-            print(comparation)
-            #comparation=.5
+            #print(comparation)
+            comparation=0.7
             if comparation>=0.5 and comparation<=0.71 and keyframe==1:
                 plt.imshow(mouth2, cmap="autumn")
                 plt.tight_layout()
