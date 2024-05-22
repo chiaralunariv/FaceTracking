@@ -172,8 +172,10 @@ readvideo=True
 
 cuadro=1 #counting all frames in the video
 _keyFrame=0 #counting only those frames where a face is detected
-keyframe=[]
+keyframe=0
 KeyFrameInfo=[]
+all_land_list = np.empty([68, 2])
+all_cuadro = np.empty([69])
 
 if forgevideo==True:
     vid_cod = cv.VideoWriter_fourcc(*'DIVX')
@@ -192,7 +194,7 @@ while readvideo==True:
         gray,
         scaleFactor=1.05,
         minNeighbors=5,
-        minSize=(50,50),# minimum dimensions of face in pixels
+        minSize=(70,70),# minimum dimensions of face in pixels
         flags=cv.CASCADE_SCALE_IMAGE)
     for (x,y,z,w) in faces:
         _keyFrame = cuadro-1 #only when face is detected give _keyFrame the frame(cuadro) value
@@ -231,11 +233,12 @@ while readvideo==True:
             output.write(gray4saving)
         if playvideo==True:
             cv.imshow('Frame',gray)   
-        if _keyFrame < 2:
+        if _keyFrame < 1:
             temporal=histogram
             temporal_coord=seleccion_lst
             all_land_list = landmarks
             all_cuadro = np.repeat(cuadro,69)
+            keyframe=1
         else:
             all_land_list = np.append(all_land_list, landmarks, axis=1)
             str_cuadro = np.repeat(cuadro,69)
@@ -279,12 +282,16 @@ while readvideo==True:
                     sumdescriptordummy[i]=sumdescriptordummy[i]+descriptordummy[i]
                 temporal_coord=seleccion_lst
                 keyframe=keyframe+1
-    if _keyFrame != cuadro:
+    if _keyFrame != cuadro-1:
         landmark_empty  = np.empty((68,2,))
         landmark_empty[:] = np.nan
-        all_land_list = np.append(all_land_list,landmark_empty,axis=1)
-        str_cuadro = np.repeat(cuadro,69)
-        all_cuadro = np.append(all_cuadro,str_cuadro)
+        if cuadro==1:
+            all_land_list = landmark_empty
+            all_cuadro = np.repeat(cuadro,69)
+        else:
+            all_land_list = np.append(all_land_list,landmark_empty,axis=1)
+            str_cuadro = np.repeat(cuadro,69)
+            all_cuadro = np.append(all_cuadro,str_cuadro)
     cuadro=cuadro+1 #counter 
     if cv.waitKey(24) & 0xFF == ord('q'):
         break
