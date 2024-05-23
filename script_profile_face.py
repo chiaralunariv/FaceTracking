@@ -42,8 +42,8 @@ from copy import deepcopy
 
 path_orig = '/Users/chiaralunarivolta/Desktop/FaceTracking/'
 
-cascade=path_orig+'haarcascade_frontalface_default.xml'
-cascade_profile=path_orig+'haarcascade_profileface.xml'
+cascade_frontal=path_orig+'haarcascade_frontalface_default.xml'
+cascade=path_orig+'haarcascade_profileface.xml'
 #cascade='/Users/chiaralunarivolta/Desktop/motion_tracking/MediaPipe/Marcos/lbpcascade_frontalface.xml'
 model= path_orig+'shape_predictor_68_face_landmarks.dat'
 ##### functions#############
@@ -163,8 +163,8 @@ file="/Users/chiaralunarivolta/Desktop/motion_tracking/MediaPipe/s1.mp4"
 KeyFrameInfo=[]
 name_file = file.split('/')[-1]
 name_name_file = name_file.split('.')[0]
-documentofinal_coord="XY_coord_"+name_name_file+".csv"
-documentofinal_frames="num_frames_"+name_name_file+".csv"
+documentofinal_coord="test_XY_coord_"+name_name_file+".csv"
+documentofinal_frames="test_num_frames_"+name_name_file+".csv"
 cap=cv.VideoCapture (file)
 forgevideo=True
 playvideo=True
@@ -186,7 +186,7 @@ all_cuadro = np.empty([69])
 
 if forgevideo==True:
     vid_cod = cv.VideoWriter_fourcc(*'DIVX')
-    output = cv.VideoWriter("tracked_"+name_name_file+".mp4", vid_cod, 25, (900,700))
+    output = cv.VideoWriter("test_tracked_"+name_name_file+".mp4", vid_cod, 25, (900,700))
 while readvideo==True:
     ret, frame= cap.read()
     #print(frame.shape)
