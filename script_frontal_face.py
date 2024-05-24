@@ -40,12 +40,14 @@ import math
 import copy
 from copy import deepcopy
 
+#set origin path (path of the repository)
 path_orig = '/Users/chiaralunarivolta/Desktop/FaceTracking/'
 
+#load all the models
 cascade=path_orig+'haarcascade_frontalface_default.xml'
 cascade_profile=path_orig+'haarcascade_profileface.xml'
-#cascade='/Users/chiaralunarivolta/Desktop/motion_tracking/MediaPipe/Marcos/lbpcascade_frontalface.xml'
 model= path_orig+'shape_predictor_68_face_landmarks.dat'
+
 ##### functions#############
 def list_p(objeto):
     variable=([])
@@ -159,7 +161,7 @@ def CosSim(a,b):
 recognizer= cv.CascadeClassifier(cascade)# <- este utiliza OPENCV
 aligner=dlib.shape_predictor(model) # <- este utiliza DLIB
 element="da8"
-file="/Users/chiaralunarivolta/Desktop/motion_tracking/MediaPipe/s1.mp4"
+file="/Users/chiaralunarivolta/Desktop/motion_tracking/MediaPipe/s1.mp4" #chose which video here
 KeyFrameInfo=[]
 name_file = file.split('/')[-1]
 name_name_file = name_file.split('.')[0]
@@ -181,8 +183,8 @@ cuadro=1 #counting all frames in the video
 _keyFrame=0 #counting only those frames where a face is detected
 keyframe=0
 KeyFrameInfo=[]
-all_land_list = np.empty([68, 2])
-all_cuadro = np.empty([69])
+all_land_list = np.empty([68, 2])#initialize empty array for landmarks
+all_cuadro = np.empty([69])#initialize empty array for frames
 
 if forgevideo==True:
     vid_cod = cv.VideoWriter_fourcc(*'DIVX')
@@ -312,6 +314,7 @@ if forgevideo==True:
     output.release()
 cv.destroyAllWindows()
 
+#save the csv files
 if savetxt==True:
     print("saving descriptor as .txt in "+documentofinal_coord)
     print("saving descriptor as .txt in "+documentofinal_frames)
@@ -319,12 +322,3 @@ if savetxt==True:
    # np_str_cuadro = np.array(str_cuadro)
     np.savetxt(documentofinal_coord,all_land_list,delimiter=",")
     np.savetxt(documentofinal_frames,all_cuadro,delimiter=",")
-    
-
-
-#KeyFrameSum=np.array(KeyFrameSum)
-#KeyFrameSum=np.reshape(KeyFrameSum,(1,40))
-#plt.plot(KeyFrameSum)
-#plt.title('Descriptor (Ga#3)')
-#plt.show()
-
